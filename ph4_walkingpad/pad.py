@@ -451,7 +451,11 @@ class Controller:
                 )
 
                 # 2ada is the notification channel for status updates, such as whether it is on and what it's speed is
-                if char.uuid.startswith("0000fe01") or char.uuid.startswith("00002ada"):
+                # 2acd is the notification channel for training statuses, which seems to be much more important
+                if char.uuid.startswith("0000fe01") or char.uuid.startswith(
+                    # "00002ada"
+                    "00002acd"
+                ):
                     logger.info("found fe01")
                     self.char_fe01 = char
 
