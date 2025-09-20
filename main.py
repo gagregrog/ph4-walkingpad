@@ -64,9 +64,31 @@ async def main():
         controller = Controller(address=device.address, do_read_chars=False)
         controller.log_messages_info = True  # Show all messages as INFO
         
+        # Add custom message handler to see raw data
+        def custom_handler(sender, data, already_notified):
+            if not already_notified:
+                msg_hex = ", ".join("{:02x}".format(x) for x in data)
+                print(f"📡 Raw notification: {msg_hex}")
+                
+                # Decode the actual treadmill data format we're seeing
+                if len(data) >= 17 and data[0] == 0x84:
+                    # Our observed format: 84, 24, SPEED_LOW, SPEED_HIGH, 14, 00, 00, 01, 00, 00, 00, 00, TIMER, 02, 6e, 00, 00
+                    speed_raw = (data[3] << 8) | data[2]  # bytes 2,3 in little endian
+                    speed_kmh = speed_raw * 0.01
+                    speed_mph = speed_kmh * 0.621371
+                    timer = data[12]
+                    
+                    print(f"🏃 Current Speed: {speed_kmh:.2f} km/h ({speed_mph:.2f} mph) [raw: {speed_raw}]")
+                    print(f"⏱️  Timer/Counter: {timer}")
+                
+                print("---")
+        
         try:
             # Connect to the device
             await controller.run()
+            
+            # Set up message handler
+            controller.handler_message = custom_handler
             
             # Check if the device is compatible
             if controller.char_fe01 is None or controller.char_fe02 is None:
