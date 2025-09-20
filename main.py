@@ -4,10 +4,44 @@
 import asyncio
 import logging
 import coloredlogs
+import sys
+import os
 from ph4_walkingpad.pad import Scanner, Controller, WalkingPad
+from datetime import datetime
 
-# Set up logging
-coloredlogs.install(level=logging.DEBUG)
+
+# Set up logging to both console and file
+# Create logs directory if it doesn't exist
+logs_dir = "logs"
+os.makedirs(logs_dir, exist_ok=True)
+
+log_filename = os.path.join(logs_dir, f"walkingpad_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+
+# Create logger
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+# Create file handler
+file_handler = logging.FileHandler(log_filename)
+file_handler.setLevel(logging.DEBUG)
+
+# Create console handler with coloredlogs
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+# Create formatter
+formatter = logging.Formatter('%(asctime)s %(name)s[%(process)d] %(levelname)s %(message)s')
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# Add handlers to logger
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+# Also apply coloredlogs to the console
+coloredlogs.install(level=logging.DEBUG, logger=logger)
+
+print(f"📝 Logging to file: {log_filename}")
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +62,7 @@ async def main():
         
         # Create controller and connect
         controller = Controller(address=device.address, do_read_chars=False)
-        controller.log_messages_info = False  # Enable debug logging for messages
+        controller.log_messages_info = True  # Show all messages as INFO
         
         try:
             # Connect to the device
