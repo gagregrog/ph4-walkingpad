@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 class Scanner:
     UUIDS = [
+        # value for Walking Pad Z1 (KS-HD-Z1D)
+        "00001826-0000-1000-8000-00805f9b34fb",
         "00001800-0000-1000-8000-00805f9b34fb",
         "0000180a-0000-1000-8000-00805f9b34fb",
         "00010203-0405-0607-0809-0a0b0c0d1912",
@@ -75,13 +77,13 @@ class Scanner:
             # Print the devices discovered
             info_str = ", ".join(
                 [
-                    "[%2d]" % i,
+                    f"[{i:2d}]",
                     str(dev.address),
                     str(dev.name),
                     str(advertisements.service_uuids),
                 ]
             )
-            logger.info("Device: %s" % info_str)
+            logger.info("Device: %s", info_str)
 
             # Put devices information into list
             self.devices_dict[dev.address] = []
@@ -89,11 +91,16 @@ class Scanner:
             self.devices_dict[dev.address].append(advertisements.service_uuids)
             self.devices_list.append(dev.address)
 
-            if dev_name and dev.name and dev_name in dev.name.lower():
+            if dev_name and dev.name and dev_name.lower() in dev.name.lower():
+                logger.info("Saved device: %s", dev.name)
                 self.walking_belt_candidates.append(dev)
 
             elif matcher and matcher(dev.name):
+                logger.info("Saved device (2): %s", dev.name)
                 self.walking_belt_candidates.append(dev)
+            else:
+                logger.info("Did Not Save: (%s)  [%s]", dev.name, dev_name)
+
 
         if not dev:
             logger.warning("Scanning ended up with no results")
@@ -339,6 +346,9 @@ class Controller:
         return await self.send_cmd_raw(cmd)
 
     async def send_cmd_raw(self, cmd):
+        if self.char_fe02 is None:
+            raise ValueError("Cannot send command: fe02 characteristic not found. Device may not be compatible.")
+        
         self.last_raw_cmd = cmd
         self.last_cmd_time = time.time()
         r = await self.client.write_gatt_char(self.char_fe02, cmd)
@@ -408,6 +418,7 @@ class Controller:
         return await self.set_pref_int(WalkingPad.PREFS_TARGET, value, target_type)
 
     async def run(self, address=None):
+        logger.info("Running...")
         await self.connect(address)
         client = self.client
 
@@ -430,7 +441,7 @@ class Controller:
                         value = str(e).encode()
 
                 logger.info(
-                    "\t[Characteristic] {0}: (Handle: {1}) ({2}) | Name: {3}, Value: {4} ".format(
+                    "\t[Characteristic] {0}: (Handle: {1}) ({2}) | Name: {3}, Value: {4}".format(
                         char.uuid,
                         char.handle,
                         ",".join(char.properties),
@@ -439,25 +450,46 @@ class Controller:
                     )
                 )
 
-                if char.uuid.startswith("0000fe01"):
+                # 2ada is the notification channel for status updates, such as whether it is on and what it's speed is
+                if char.uuid.startswith("0000fe01") or char.uuid.startswith("00002ada"):
+                    logger.info("found fe01")
                     self.char_fe01 = char
 
-                if char.uuid.startswith("0000fe02"):
+                if char.uuid.startswith("0000fe02") or char.uuid.startswith("00002ad9"):
+                    logger.info("found fe02")
                     self.char_fe02 = char
 
-                for descriptor in char.descriptors:
-                    value = await client.read_gatt_descriptor(descriptor.handle)
-                    logger.info(
-                        "\t\t[Descriptor] {0}: (Handle: {1}) | Value: {2} ".format(
-                            descriptor.uuid, descriptor.handle, bytes(value)
-                        )
-                    )
+                if self.do_read_chars:
+                    for descriptor in char.descriptors:
+                        try:
+                            value = await client.read_gatt_descriptor(descriptor.handle)
+                            if value is not None:
+                                logger.info(
+                                    "\t\t[Descriptor] {0}: (Handle: {1}) | Value: {2} ".format(
+                                        descriptor.uuid, descriptor.handle, bytes(value)
+                                    )
+                                )
+                            else:
+                                logger.debug("Descriptor %s returned None value" % descriptor.uuid)
+                        except Exception as e:
+                            logger.debug("Failed to read descriptor %s: %s" % (descriptor.uuid, e))
+
+        if self.char_fe01 is None:
+            logger.info("did not find fe01")
+
+        if self.char_fe02 is None:
+            logger.info("did not find fe02")
+        
+        if self.char_fe01 is None:
+            logger.error("Required characteristics not found. Device may not be compatible.")
+            logger.error("Expected: fe01 (notifications) and fe02 (commands)")
+            return
 
         try:
-            logger.info("Enabling notification for %s" % (self.char_fe01.uuid,))
+            logger.info("Enabling notification for %s", self.char_fe01.uuid)
             await client.start_notify(self.char_fe01.uuid, self.notif_handler)
 
         except Exception as e:
-            logger.warning("Notify failed: %s" % (e,))
+            logger.warning("Notify failed: %s", e)
 
         logger.info("Service enumeration done")
