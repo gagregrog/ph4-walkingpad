@@ -10,6 +10,11 @@ from datetime import datetime
 
 KNOWN_DEVICE = "99DB0444-F2EF-9F38-4238-E4CC8C1E00F3"
 
+
+should_start = False
+should_get_speed = False
+should_change_speeds = False
+
 def decode_treadmill_message(data):
     """
     Decode a 17-byte treadmill notification message.
@@ -151,7 +156,6 @@ async def main():
             else:
                 print(f"Connected to walking pad: {device["name"]}")
               
-                should_get_speed = False
                 if should_get_speed:
                   try:
                       print("Reading supported speed range...")
@@ -162,32 +166,33 @@ async def main():
                   except Exception as e:
                       print(f"Could not read speed range: {e}")
 
-                try:
-                    print("Reading machine features...")
-                    # WILL NOT ACCEPT START COMMAND WITHOUT SENDING THIS BLOCK
-                    # Request Control Point features (OpCode 0x00)
-                    features_cmd = bytearray([0x00])
-                    await controller.send_cmd_raw(features_cmd)
-                    await asyncio.sleep(1.0)
-                    print("Sending start command...")
-                    # Start/Resume command (OpCode 0x07)
-                    start_cmd = bytearray([0x07])  # Standard "Start or Resume" command
-                    await controller.send_cmd_raw(start_cmd)
-                    print("Sent standard start command")
-                    await asyncio.sleep(3.0)
-                    
-                    await asyncio.sleep(1.5)
-                    features_cmd = bytearray([0x00])
-                    await controller.send_cmd_raw(features_cmd)
+                
+                # WILL NOT ACCEPT START COMMANDS WITHOUT SENDING THIS BLOCK
+                # Request Control Point features (OpCode 0x00)
+                features_cmd = bytearray([0x00])
+                await controller.send_cmd_raw(features_cmd)
+                await asyncio.sleep(1.0)
 
-                    # here here here
-                    await asyncio.sleep(3.0)
-                      
-                except Exception as e:
-                    print(f"Start/stop test failed: {e}")
+                if should_start:
+                    try:
+                        print("Sending start command...")
+                        # Start/Resume command (OpCode 0x07)
+                        start_cmd = bytearray([0x07])  # Standard "Start or Resume" command
+                        await controller.send_cmd_raw(start_cmd)
+                        print("Sent standard start command")
+                        await asyncio.sleep(3.0)
+                        
+                        await asyncio.sleep(1.5)
+                        features_cmd = bytearray([0x00])
+                        await controller.send_cmd_raw(features_cmd)
+
+                        # here here here
+                        await asyncio.sleep(3.0)
+                        
+                    except Exception as e:
+                        print(f"Start/stop test failed: {e}")
               
-                try_speeds = False
-                if try_speeds:
+                if should_change_speeds:
                     # Now try setting speeds with different approaches
                     speeds_to_try = [
                         # (0xA0, "1.6 km/h (1.0 mph)"),  # Starting speed
@@ -217,15 +222,15 @@ async def main():
                 # Wait until user terminates the program
                 print("Motor start attempted! Monitoring device data... Press Ctrl+C to exit")
                 try:
+                    print("\n\n\n\nMADE IT!!!!\n\n\n\n")
                     while True:
                         await asyncio.sleep(1.0)
                 except (KeyboardInterrupt, asyncio.CancelledError):
-                    print("Stopping")
+                    pass
                 
         except Exception as e:
             logger.error(f"Error connecting to device: {e}")
         finally:
-            # Clean up connection
             try:
                 await controller.disconnect()
                 print("✅ Disconnected from device")
