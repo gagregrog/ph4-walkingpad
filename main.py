@@ -72,16 +72,18 @@ def custom_handler(sender, data, already_notified):
       decoded = decode_treadmill_message(data)
       
       if decoded:
-          # Display decoded information
-          status_emoji = "🟢" if decoded['is_running'] else "🛑"
-          status_text = "Running" if decoded['is_running'] else "Stopped"
-          
-          print(f"{status_emoji} Status: {status_text}")
-          print(f"🏃 Speed: {decoded['speed_kmh']:.1f} km/h ({decoded['speed_mph']:.1f} mph)")
-          print(f"📏 Distance: {decoded['distance_km']:.3f} km ({decoded['distance_miles']:.3f} miles)")
-          print(f"🔥 Calories: {decoded['calories']} kcal")
-          print(f"⏱️  Time: {decoded['time_formatted']} ({decoded['time_seconds']}s)")
-          print("---")
+        # Display decoded information
+        status_emoji = "🟢" if decoded['is_running'] else "🛑"
+        status_text = "Running" if decoded['is_running'] else "Stopped"
+        msg_hex = ", ".join("{:02x}".format(x) for x in data)
+        print("\n%s" % msg_hex)
+        print("[HEAD ] [SPEED] [DISTANCE ] [CALORIES ] [     ] [TIME ] [STEPS] []\n")
+        print(f"{status_emoji} Status: {status_text}")
+        print(f"🏃 Speed: {decoded['speed_kmh']:.1f} km/h ({decoded['speed_mph']:.1f} mph)")
+        print(f"📏 Distance: {decoded['distance_km']:.3f} km ({decoded['distance_miles']:.3f} miles)")
+        print(f"🔥 Calories: {decoded['calories']} kcal")
+        print(f"⏱️  Time: {decoded['time_formatted']} ({decoded['time_seconds']}s)")
+        print("---")
 
 # Set up logging to both console and file
 # Create logs directory if it doesn't exist
