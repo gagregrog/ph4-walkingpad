@@ -220,9 +220,8 @@ async def main():
                             print(f"Speed command for {speed_name} failed: {e}")
               
                 # Wait until user terminates the program
-                print("Motor start attempted! Monitoring device data... Press Ctrl+C to exit")
+                print("Monitoring device data... Press Ctrl+C to exit")
                 try:
-                    print("\n\n\n\nMADE IT!!!!\n\n\n\n")
                     while True:
                         await asyncio.sleep(1.0)
                 except (KeyboardInterrupt, asyncio.CancelledError):

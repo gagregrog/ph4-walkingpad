@@ -450,17 +450,18 @@ class Controller:
                     )
                 )
 
-                # 2ada is the notification channel for status updates, such as whether it is on and what it's speed is
-                # 2acd is the notification channel for training statuses, which seems to be much more important
+                # 00002ada is the notification channel for status updates, such as whether it is on and what it's speed is
+                # 00002acd is the notification channel for  Treadmill Data, which seems to be much more important
+                # 00002ad3 is the notification channel for training statuses
                 if char.uuid.startswith("0000fe01") or char.uuid.startswith(
                     # "00002ada"
                     "00002acd"
+                    # "00002ad3"
                 ):
-                    logger.info("found fe01")
                     self.char_fe01 = char
 
+                # 00002ad9 is the Fitness Machine Control Point
                 if char.uuid.startswith("0000fe02") or char.uuid.startswith("00002ad9"):
-                    logger.info("found fe02")
                     self.char_fe02 = char
 
                 if self.do_read_chars:
