@@ -23,12 +23,12 @@ def decode_treadmill_message(data):
     [0-1]: Header - always 84 24
     [2-3]: Speed (little-endian) - speed in units of 10 meters / 1 hour (0.01km/h)
     [4-5]: Distance (little-endian) - distance in meters (byte5 << 8 | byte4)
-    [6]: Unknown - likely the most significant byte of distance
-    [7]: Calories burned - cumulative calories in kcal
-    [8-11]: Unknown - likely includes two more bytes for calories
+    [6]: Unknown
+    [7-8]: Calories burned - cumulative calories in kcal
+    [9-11]: Unknown
     [12-13]: Time (little-endian) - seconds since start (can exceed 255)
-    [14]: Unknown - likely the next significant byte of the time
-    [15-16]: Unknown
+    [14-15]: Steps (little-endian)
+    [16]: Null byte
     """
     if len(data) != 17:
         return None
@@ -38,8 +38,9 @@ def decode_treadmill_message(data):
         header = (data[1] << 8) | data[0]
         speed_raw = (data[3] << 8) | data[2] # bytes 2,3 in little endian (THIS IS CORRECT, DO NOT CHANGE THIS!!!)
         distance_raw = (data[5] << 8) | data[4]  # bytes 4,5 in little endian - distance in meters (THIS IS CORRECT, DO NOT CHANGE THIS!!!)
-        calories = data[7]
+        calories = (data[8] << 8) | data[7]  # bytes 7,8 in little endian - calories (THIS IS CORRECT, DO NOT CHANGE THIS!!!)
         time_seconds = (data[13] << 8) | data[12]  # bytes 12,13 in little endian for time > 255 (THIS IS CORRECT, DO NOT CHANGE THIS!!!)
+        steps = (data[15] << 8) | data[14]  # bytes 12,13 in little endian for time > 255 (THIS IS CORRECT, DO NOT CHANGE THIS!!!)
         
         # Calculate derived values
         # Distance: bytes 4,5 represent distance in meters
@@ -58,6 +59,7 @@ def decode_treadmill_message(data):
             'speed_mph': speed_mph,
             'calories': calories,
             'time_seconds': time_seconds,
+            'steps': steps,
             'time_formatted': f"{time_seconds // 60:02d}:{time_seconds % 60:02d}",
             'distance_km': distance_km,
             'distance_miles': distance_miles,
@@ -82,7 +84,8 @@ def custom_handler(sender, data, already_notified):
         print(f"🏃 Speed: {decoded['speed_kmh']:.1f} km/h ({decoded['speed_mph']:.1f} mph)")
         print(f"📏 Distance: {decoded['distance_km']:.3f} km ({decoded['distance_miles']:.3f} miles)")
         print(f"🔥 Calories: {decoded['calories']} kcal")
-        print(f"⏱️  Time: {decoded['time_formatted']} ({decoded['time_seconds']}s)")
+        print(f"👟 Steps: {decoded['steps']}")
+        print(f"⏱️ Time: {decoded['time_formatted']} ({decoded['time_seconds']}s)")
         print("---")
 
 # Set up logging to both console and file
