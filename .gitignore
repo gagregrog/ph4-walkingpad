@@ -12,3 +12,4 @@ profile.json.*
 profile-a*.json*
 account-data.json
 android/*
+logs/*

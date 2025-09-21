@@ -1,0 +1,30 @@
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO [Service] 0000180a-0000-1000-8000-00805f9b34fb: Device Information
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002a29-0000-1000-8000-00805f9b34fb: (Handle: 2) (read) | Name: Manufacturer Name String, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002a24-0000-1000-8000-00805f9b34fb: (Handle: 4) (read) | Name: Model Number String, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002a25-0000-1000-8000-00805f9b34fb: (Handle: 6) (read) | Name: Serial Number String, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002a27-0000-1000-8000-00805f9b34fb: (Handle: 8) (read) | Name: Hardware Revision String, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002a26-0000-1000-8000-00805f9b34fb: (Handle: 10) (read) | Name: Firmware Revision String, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002a28-0000-1000-8000-00805f9b34fb: (Handle: 12) (read) | Name: Software Revision String, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002a23-0000-1000-8000-00805f9b34fb: (Handle: 14) (read) | Name: System ID, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO [Service] 00001826-0000-1000-8000-00805f9b34fb: Fitness Machine
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002acc-0000-1000-8000-00805f9b34fb: (Handle: 17) (read) | Name: Fitness Machine Feature, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002ada-0000-1000-8000-00805f9b34fb: (Handle: 19) (read,notify) | Name: Fitness Machine Status, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO found fe01
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002acd-0000-1000-8000-00805f9b34fb: (Handle: 22) (notify) | Name: Treadmill Data, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002ad3-0000-1000-8000-00805f9b34fb: (Handle: 25) (read,notify) | Name: Training Status, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002ad4-0000-1000-8000-00805f9b34fb: (Handle: 28) (read) | Name: Supported Speed Range, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002ad5-0000-1000-8000-00805f9b34fb: (Handle: 30) (read) | Name: Supported Inclination Range, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002ad7-0000-1000-8000-00805f9b34fb: (Handle: 32) (read) | Name: Supported Heart Rate Range, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 00002ad9-0000-1000-8000-00805f9b34fb: (Handle: 34) (indicate,write) | Name: Fitness Machine Control Point, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO found fe02
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO [Service] 0000ffc0-0000-1000-8000-00805f9b34fb: Vendor specific
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 0000ffc1-0000-1000-8000-00805f9b34fb: (Handle: 38) (notify) | Name: Vendor specific, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 0000ffc2-0000-1000-8000-00805f9b34fb: (Handle: 41) (write-without-response) | Name: Vendor specific, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO [Service] 0000fff0-0000-1000-8000-00805f9b34fb: Vendor specific
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 0000fff1-0000-1000-8000-00805f9b34fb: (Handle: 44) (notify) | Name: Vendor specific, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 0000fff2-0000-1000-8000-00805f9b34fb: (Handle: 47) (write-without-response) | Name: Vendor specific, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO [Service] 24e2521c-f63b-48ed-85be-c5330a00fdf7: Unknown
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 24e2521c-f63b-48ed-85be-c5330b00fdf7: (Handle: 50) (notify) | Name: Unknown, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 24e2521c-f63b-48ed-85be-c5330d00fdf7: (Handle: 53) (write-without-response,write) | Name: Unknown, Value: None
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO [Service] 0000ff00-0000-1000-8000-00805f9b34fb: Vendor specific
+2025-09-20 21:33:24 Roberts-MacBook-Pro-2.local ph4_walkingpad.pad[51619] INFO  [Characteristic] 0000ff01-0000-1000-8000-00805f9b34fb: (Handle: 56) (write) | Name: Vendor specific, Value: None
