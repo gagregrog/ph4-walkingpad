@@ -256,7 +256,6 @@ class Controller:
         self.log_messages_info = True
         self.ignore_bad_packets = False
 
-        self.char_fe01 = None
         self.char_fe02 = None
         self.client = None
         self.last_raw_cmd = None
@@ -425,7 +424,7 @@ class Controller:
         x = client.is_connected
         logger.info("Connected: {0}".format(x))
 
-        self.char_fe01 = None
+        self.notify_chars = []
         self.char_fe02 = None
 
         for service in client.services:
@@ -453,15 +452,10 @@ class Controller:
                 # 00002ada is the notification channel for status updates, such as whether it is on and what it's speed is
                 # 00002acd is the notification channel for  Treadmill Data, which seems to be much more important
                 # 00002ad3 is the notification channel for training statuses
-                if char.uuid.startswith("0000fe01") or char.uuid.startswith(
-                    # "00002ada"
-                    "00002acd"
-                    # "00002ad3"
-                ):
-                    self.char_fe01 = char
-
+                if char.uuid.startswith("00002ada") or char.uuid.startswith("00002acd") or char.uuid.startswith("00002ad3"):
+                    self.notify_chars.append(char)
                 # 00002ad9 is the Fitness Machine Control Point
-                if char.uuid.startswith("0000fe02") or char.uuid.startswith("00002ad9"):
+                if char.uuid.startswith("00002ad9"):
                     self.char_fe02 = char
 
                 if self.do_read_chars:
@@ -479,20 +473,18 @@ class Controller:
                         except Exception as e:
                             logger.debug("Failed to read descriptor %s: %s" % (descriptor.uuid, e))
 
-        if self.char_fe01 is None:
-            logger.info("did not find fe01")
+        if len(self.notify_chars) == 0:
+            logger.info("did not find notify chars")
 
         if self.char_fe02 is None:
-            logger.info("did not find fe02")
-        
-        if self.char_fe01 is None:
             logger.error("Required characteristics not found. Device may not be compatible.")
-            logger.error("Expected: fe01 (notifications) and fe02 (commands)")
+            logger.error("Expected: fe02 (commands)")
             return
 
         try:
-            logger.info("Enabling notification for %s", self.char_fe01.uuid)
-            await client.start_notify(self.char_fe01.uuid, self.notif_handler)
+            for char in self.notify_chars:
+                logger.info("Enabling notification for %s", char.uuid)
+                await client.start_notify(char.uuid, self.notif_handler)
 
         except Exception as e:
             logger.warning("Notify failed: %s", e)

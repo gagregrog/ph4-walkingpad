@@ -69,16 +69,13 @@ def decode_treadmill_message(data):
     
 # Add custom message handler to see raw data
 def custom_handler(sender, data, already_notified):
-  if not already_notified:
+  if not already_notified: 
       # Try to decode the message using our improved decoder
       decoded = decode_treadmill_message(data)
       
       if decoded:
-        # Display decoded information
         status_emoji = "🟢" if decoded['is_running'] else "🛑"
         status_text = "Running" if decoded['is_running'] else "Stopped"
-        msg_hex = ", ".join("{:02x}".format(x) for x in data)
-        print("\n%s" % msg_hex)
         print("[HEAD ] [SPEED] [DISTANCE ] [CALORIES ] [     ] [TIME ] [STEPS] []\n")
         print(f"{status_emoji} Status: {status_text}")
         print(f"🏃 Speed: {decoded['speed_kmh']:.1f} km/h ({decoded['speed_mph']:.1f} mph)")
@@ -86,7 +83,13 @@ def custom_handler(sender, data, already_notified):
         print(f"🔥 Calories: {decoded['calories']} kcal")
         print(f"👟 Steps: {decoded['steps']}")
         print(f"⏱️ Time: {decoded['time_formatted']} ({decoded['time_seconds']}s)")
-        print("---")
+      else:
+        print(f"   -> NON-STATUS MESSAGE (could be command/control message)")
+        # Log ALL messages with timestamp
+        timestamp = datetime.now().strftime('%H:%M:%S.%f')[:-3]
+        msg_hex = ", ".join("{:02x}".format(x) for x in data)
+        print(f"\n[{timestamp}] RAW MESSAGE ({len(data)} bytes): {msg_hex}")
+      print("---")
 
 # Set up logging to both console and file
 # Create logs directory if it doesn't exist
@@ -155,9 +158,9 @@ async def main():
             controller.handler_message = custom_handler
             
             # Check if the device is compatible
-            if controller.char_fe01 is None or controller.char_fe02 is None:
+            if controller.char_fe02 is None:
                 print(f"Device {device["name"]} connected but is not compatible with WalkingPad protocol")
-                print("Missing required characteristics (fe01/fe02)")
+                print("Missing required characteristics (fe02)")
             else:
                 print(f"Connected to walking pad: {device["name"]}")
               
@@ -195,7 +198,7 @@ async def main():
                         await asyncio.sleep(3.0)
                         
                     except Exception as e:
-                        print(f"Start/stop test failed: {e}")
+                        print(f"Start command failed: {e}")
               
                 if should_change_speeds:
                     # Now try setting speeds with different approaches
@@ -236,6 +239,14 @@ async def main():
             logger.error(f"Error connecting to device: {e}")
         finally:
             try:
+                # Stop the treadmill
+                features_cmd = bytearray([0x00])
+                await controller.send_cmd_raw(features_cmd)
+                await asyncio.sleep(1.0)
+                features_cmd = bytearray([0x08, 0x02])
+                await controller.send_cmd_raw(features_cmd)
+                await asyncio.sleep(1.0)
+
                 await controller.disconnect()
                 print("✅ Disconnected from device")
             except Exception as e:
